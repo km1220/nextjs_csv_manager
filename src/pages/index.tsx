@@ -1,24 +1,15 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
+import { useEffect } from 'react';
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 
-import MainLayout from '@/layouts/MainLayout'
+import LoadingScreen from '@/components/LoadingPage';
 
 const Home: NextPage = () => {
-  return (
-    <>
-      <Head>
-        <title>Index Page</title>
-        <meta name="description" content="Index Page" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <MainLayout>
-        <h1 >
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-      </MainLayout>
-    </>
-  )
+	const router = useRouter();
+	useEffect(() => {
+		router.push('/page1_1');
+	}, []);
+	return <LoadingScreen />;
 }
 
 export default Home

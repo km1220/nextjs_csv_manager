@@ -2,7 +2,7 @@ import React from 'react';
 // import "./loading.css";
 // import "./loading.scss";
 
-export default function Loading({ className, ...others }) {
+export default function Loading({ className = '', ...others }) {
 	return (
 		<>
 			<style jsx="true">{`

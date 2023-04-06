@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { useAppSelector } from '@/store';
 
-import LoadingScreen from '../components/LoadingPage';
+import LoadingScreen from '@/components/LoadingPage';
 import LeftSidebar from './LeftSideBar';
 
 interface Props {
@@ -13,7 +13,7 @@ const MainLayout = ({ children }: Props) => {
 	return (
 		<>
 			{loading ?
-				<LoadingScreen className="fixed w-screen h-screen z-50" /> : ''
+				<LoadingScreen className="fixed z-50 w-screen h-screen" /> : ''
 			}
 			<div style={{ display: 'flex', minHeight: '100vh' }}>
 				{/* Left Sidebar Panel */}
