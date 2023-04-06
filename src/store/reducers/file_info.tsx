@@ -1,13 +1,18 @@
 import { createSlice, PayloadAction, AnyAction } from '@reduxjs/toolkit';
 // import { HYDRATE } from 'next-redux-wrapper';
+import { WorkBook, WorkSheet } from 'xlsx';
 
 interface FileInfoState {
 	file_data: File | undefined;
+	workbook: WorkBook | undefined,
+	worksheet: WorkSheet | undefined,
 	json: object[],
 }
 
 const initialState: FileInfoState = {
 	file_data: undefined,
+	workbook: undefined,
+	worksheet: undefined,
 	json: [],
 };
 
@@ -15,6 +20,12 @@ export const fileSlice = createSlice({
 	name: 'selected_csv_file',
 	initialState,
 	reducers: {
+		set: (state, action: PayloadAction<any>) => {
+			state = { ...state, ...action.payload };
+		},
+		reset: (state) => {
+			state = initialState;
+		},
 		setFile: (state, action: PayloadAction<File>) => {
 			state.file_data = action.payload;
 		},
@@ -35,6 +46,6 @@ export const fileSlice = createSlice({
 	// }
 });
 
-export const { setFile, resetFile, setJSONData, resetJSONData } = fileSlice.actions;
+export const { set, reset, setFile, resetFile, setJSONData, resetJSONData } = fileSlice.actions;
 
 export default fileSlice.reducer;

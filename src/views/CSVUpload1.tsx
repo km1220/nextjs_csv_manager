@@ -108,8 +108,8 @@ const EditPopover = (props: PopoverProps) => {
 
 const CSVUpload2: NextPage = () => {
 	const router = useRouter();
-	const _file = useAppSelector((state) => state.file.file_data);
 	const dispatch = useAppDispatch();
+	const _file = useAppSelector((state) => state.file.file_data);
 
 	const [files, setFiles] = useState<File[]>([]);
 	const [selectedFileIndex, setSelectedFileIndex] = useState('');

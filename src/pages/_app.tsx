@@ -36,7 +36,7 @@ const CustomApp = ({ Component, emotionCache = clientSideEmotionCache, pageProps
 				<Component {...pageProps} />
 				<ToastContainer
 					position="top-right"
-					autoClose={5000} hideProgressBar={false} newestOnTop={true} rtl={false}
+					autoClose={2000} hideProgressBar={false} newestOnTop={true} rtl={false}
 					closeOnClick pauseOnFocusLoss draggable pauseOnHover theme="light"
 				/>
 			</ThemeProvider>

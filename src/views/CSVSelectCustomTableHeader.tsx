@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Head from 'next/head'
 
 import {
-	Box, Button, Paper, Typography, Checkbox,
+	Box, Button, Paper, Typography, Checkbox, RadioGroup,
 	TableContainer, Table, TableHead, TableBody, TableRow, TableCell,
 } from '@mui/material'
 import { styled, useTheme } from '@mui/material/styles'
@@ -49,8 +49,14 @@ const DataTableBox = styled(Paper)(({ theme }) => ({
 		borderBottom: `2px solid ${theme.palette.divider}`,
 	},
 	"& .MuiTableCell-root": {
+		maxWidth: '20rem', maxHeight: '3rem',
+		padding: '0.75rem',
+		overflow: 'auto',
 		whiteSpace: 'nowrap',
 		borderRight: `1px solid ${theme.palette.divider}`,
+		'&::-webkit-scrollbar': { width: '0.125rem', height: '0.125rem' },
+		'&::-webkit-scrollbar-thumb': { background: theme.palette.secondary.main },
+		'&::-webkit-scrollbar-thumb:hover': { background: theme.palette.secondary.light },
 	}
 }))
 
@@ -58,6 +64,7 @@ const CSVSelectCustomTableHeader: NextPage = () => {
 	const router = useRouter();
 	const { file_data: _file, json: _csv_json } = useAppSelector((state: RootState) => state.file);
 	const [titleWidthList, setTitleWidthList] = useState<number[]>([]);
+	const [selectedRadio, setSelectedRadio] = useState<string>('');
 
 	useEffect(() => {
 		if (!_csv_json || !_csv_json.length) {
@@ -102,40 +109,43 @@ const CSVSelectCustomTableHeader: NextPage = () => {
 						</div>
 						<TableContainer component={DataTableBox}>
 							{_csv_json.length ?
-								<Table className='border-collapse' sx={{ width: '100%', tableLayout: "auto" }}>
-									<TableHead>
-										<TableRow>
-											<TableCell>
-												<CustomRadio1 size='small' checked />
-											</TableCell>
-											{Object.keys(_csv_json[0]).map((each_title, iTitle) => (
-												<TableCell key={each_title}>
-													<Typography variant='subtitle1'>{each_title}</Typography>
-												</TableCell>
-											))}
-										</TableRow>
-									</TableHead>
-
-									<TableBody>
-										{_csv_json.map((each_row: { [key: string]: any }, iRow: number) => (
-											<TableRow key={iRow}>
+								<RadioGroup value={selectedRadio} onChange={(e => setSelectedRadio(e.target.value))}>
+									<Table className='border-collapse' sx={{ width: '100%', tableLayout: "auto" }}>
+										<TableHead>
+											<TableRow>
 												<TableCell>
-													<CustomRadio1 size='small' />
+													<CustomRadio1 size='small' value="" />
 												</TableCell>
-												{
-													Object.keys(each_row).map(each_key => (
-														<TableCell key={`${iRow}+${each_key}`}>
-															<Typography>{each_row[each_key]}</Typography>
-														</TableCell>
-													))
-												}
+												{Object.keys(_csv_json[0]).map((each_title, iTitle) => (
+													<TableCell key={each_title}>
+														<Typography variant='subtitle1'>{each_title}</Typography>
+													</TableCell>
+												))}
 											</TableRow>
-										))}
-									</TableBody>
-								</Table>
+										</TableHead>
+
+										<TableBody>
+											{_csv_json.map((each_row: { [key: string]: any }, iRow: number) => (
+												<TableRow key={iRow}>
+													<TableCell>
+														<CustomRadio1 size='small' value={iRow} />
+													</TableCell>
+													{
+														Object.keys(each_row).map(each_key => (
+															<TableCell key={`${iRow}+${each_key}`}>
+																<Typography>{each_row[each_key]}</Typography>
+															</TableCell>
+														))
+													}
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+								</RadioGroup>
 								: ''
 							}
 						</TableContainer>
+
 					</div>
 				</PageBody>
 			</MainLayout >
@@ -144,32 +154,3 @@ const CSVSelectCustomTableHeader: NextPage = () => {
 }
 
 export default CSVSelectCustomTableHeader
-
-
-const mock_data = [
-	{
-		product_title: 'Anhängerkupplung WESTFALIA abnehmbar + Elektrosatz spezifisch 13 polig + Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		car_name: 'Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		detail: 'alle benötigten Einbauteile, Montageanleitung'
-	},
-	{
-		product_title: 'Anhängerkupplung WESTFALIA abnehmbar + Elektrosatz spezifisch 13 polig + Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		car_name: 'Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		detail: 'alle benötigten Einbauteile, Montageanleitung'
-	},
-	{
-		product_title: 'Anhängerkupplung WESTFALIA abnehmbar + Elektrosatz spezifisch 13 polig + Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		car_name: 'Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		detail: 'alle benötigten Einbauteile, Montageanleitung'
-	},
-	{
-		product_title: 'Anhängerkupplung WESTFALIA abnehmbar + Elektrosatz spezifisch 13 polig + Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		car_name: 'Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		detail: 'alle benötigten Einbauteile, Montageanleitung'
-	},
-	{
-		product_title: 'Anhängerkupplung WESTFALIA abnehmbar + Elektrosatz spezifisch 13 polig + Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		car_name: 'Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		detail: 'alle benötigten Einbauteile, Montageanleitung'
-	}
-]

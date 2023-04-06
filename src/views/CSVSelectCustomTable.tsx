@@ -1,13 +1,20 @@
-import React, { useEffect } from 'react';
+import _ from 'lodash';
+import * as XLSX from 'xlsx';
+import React, { useState, useEffect } from 'react';
 import type { NextPage } from 'next';
 import { useAppSelector, useAppDispatch, RootState } from '@/store';
+import { setLoading, endLoading } from '@/store/reducers/settings';
+import {
+	// set as setFileInfo, reset as resetFileInfo,
+	setJSONData, resetJSONData
+} from '@/store/reducers/file_info';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head'
 import Image from 'next/image'
 
-import { Box, Button, Paper, Typography, Checkbox, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material'
+import { Box, Button, Paper, Typography, Checkbox, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, OutlinedInput } from '@mui/material'
 import { styled, useTheme } from '@mui/material/styles'
-import { Autorenew, ArrowForward } from '@mui/icons-material'
+import { Autorenew, ArrowForward, DoneOutlineOutlined } from '@mui/icons-material'
 
 import { toast } from 'react-toastify';
 
@@ -63,7 +70,14 @@ const DataTableBox = styled(Paper)(({ theme }) => ({
 
 const CSVSelectCustomTable: NextPage = () => {
 	const router = useRouter();
-	const { file_data: _file, json: _csv_json } = useAppSelector((state: RootState) => state.file);
+	const dispatch = useAppDispatch();
+	const {
+		file_data: _file,
+		// workbook: _workbook,
+		// worksheet: _worksheet,
+		json: _csv_json,
+	} = useAppSelector((state: RootState) => state.file);
+	const [headerCSV, setCSVHeader] = useState<string[]>([]);
 
 	useEffect(() => {
 		if (!_csv_json || !_csv_json.length) {
@@ -71,7 +85,54 @@ const CSVSelectCustomTable: NextPage = () => {
 			router.replace('/page1_1');
 			return;
 		}
+		setCSVHeader(Object.keys(_csv_json[0]));
 	}, [_file, _csv_json]);
+
+
+	const handleHeaderCellChange = async (index: number, newHeaderText: string) => {
+		if (!_file) {
+			toast.error('Excel file is not ready yet.');
+			router.replace('/page1_1');
+			return;
+		}
+
+		const updated_csv_json = _.map(_csv_json, each_row =>
+			_.mapKeys(each_row, (each_cell, each_title) =>
+				each_title === headerCSV[index] ? newHeaderText : each_title
+			)
+		);
+		console.log('--------------------------------', updated_csv_json);
+		dispatch(setJSONData(updated_csv_json));
+
+		// Update the header row state variable.
+		let newHeader = [...headerCSV];
+		newHeader[index] = newHeaderText;
+		setCSVHeader(newHeader);
+		console.log(index, '===', newHeaderText, headerCSV, '----', newHeader);
+
+		dispatch(setLoading());
+		const f = await _file.arrayBuffer();
+		const workbook = XLSX.read(f, { type: "base64" });
+		const worksheetName = workbook.SheetNames[0];
+		const worksheet = workbook.Sheets[worksheetName];
+
+		// Modify the newly updated header row
+		const newWorksheet = XLSX.utils.sheet_add_aoa(worksheet, [newHeader], { origin: 0 });
+		workbook.Sheets[worksheetName] = newWorksheet;
+		dispatch(endLoading());
+
+		// Convert the updated data to a Blob object
+		const updatedExcelData = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+		const blob = new Blob([updatedExcelData], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
+		// Save the file with the updated header cell value
+		const url = window.URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = "updated-file.xlsx";
+		a.click();
+		window.URL.revokeObjectURL(url);
+	};
 
 	return (
 		<>
@@ -110,14 +171,10 @@ const CSVSelectCustomTable: NextPage = () => {
 								<Table className='border-collapse' sx={{ width: '100%', tableLayout: "auto" }}>
 									<TableHead>
 										<TableRow>
-											{Object.keys(_csv_json[0]).map((each_title, iTitle) => (
-												<TableCell key={iTitle}>
-													<div className='flex items-center justify-center gap-4'>
-														<CustomCheckbox1 size='small' checked />
-														<Typography variant='subtitle1'>{each_title}</Typography>
-														<Image src={ImgSax} alt="Icon Sax" />
-													</div>
-												</TableCell>
+											{headerCSV.map((each_title, iTitle) => (
+												<TableEditableCell key={iTitle} title={each_title}
+													handleChange={(newText: string) => handleHeaderCellChange(iTitle, newText)}
+												/>
 											))}
 										</TableRow>
 									</TableHead>
@@ -149,30 +206,43 @@ const CSVSelectCustomTable: NextPage = () => {
 export default CSVSelectCustomTable
 
 
-const mock_data = [
-	{
-		product_title: 'Anhängerkupplung WESTFALIA abnehmbar + Elektrosatz spezifisch 13 polig + Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		car_name: 'Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		detail: 'alle benötigten Einbauteile, Montageanleitung'
-	},
-	{
-		product_title: 'Anhängerkupplung WESTFALIA abnehmbar + Elektrosatz spezifisch 13 polig + Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		car_name: 'Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		detail: 'alle benötigten Einbauteile, Montageanleitung'
-	},
-	{
-		product_title: 'Anhängerkupplung WESTFALIA abnehmbar + Elektrosatz spezifisch 13 polig + Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		car_name: 'Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		detail: 'alle benötigten Einbauteile, Montageanleitung'
-	},
-	{
-		product_title: 'Anhängerkupplung WESTFALIA abnehmbar + Elektrosatz spezifisch 13 polig + Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		car_name: 'Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		detail: 'alle benötigten Einbauteile, Montageanleitung'
-	},
-	{
-		product_title: 'Anhängerkupplung WESTFALIA abnehmbar + Elektrosatz spezifisch 13 polig + Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		car_name: 'Audi A3 1.8 TFSI quattro 2012/08-2016/08',
-		detail: 'alle benötigten Einbauteile, Montageanleitung'
+
+const TableEditableCell = ({
+	title = '', handleChange = (text: string) => { },
+	className = '', ...others
+}) => {
+	const [flagEdit, setFlagEdit] = useState(false);
+	const [text, setText] = useState<string>(title);
+
+	const onEdit = () => setFlagEdit(true);
+	const onEditDone = () => {
+		setFlagEdit(false);
+		handleChange(text);
 	}
-]
+	return (
+		<TableCell className={`w-max ${className}`} {...others}>
+			<div className='flex items-center justify-center gap-4 '>
+				<CustomCheckbox1 size='small' />
+				{flagEdit == false ?
+					<>
+						<Typography variant='subtitle1'>{text}</Typography>
+						<Image
+							className='cursor-pointer'
+							src={ImgSax} alt="Icon Sax"
+							onClick={onEdit}
+						/>
+					</>
+					:
+					<>
+						<OutlinedInput classes={{ input: 'w-auto px-4 py-0' }} value={text} onChange={e => setText(e.target.value)} />
+						<DoneOutlineOutlined
+							className='cursor-pointer' color='primary'
+							onClick={onEditDone}
+							sx={{ fontSize: '1rem' }}
+						/>
+					</>
+				}
+			</div>
+		</TableCell>
+	)
+}

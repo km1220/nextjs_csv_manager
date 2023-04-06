@@ -1,8 +1,10 @@
-import * as React from 'react';
+import _ from 'lodash';
+import React, { useState, useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Chip from '@mui/material/Chip';
+
 
 type Option = {
 	label: string;
@@ -27,6 +29,21 @@ export default function MultiSelectInput() {
 	};
 
 	console.log(Object.keys({ aaa: '123', bbb: '534', ccc: '24234' }))
+
+
+	const originalArray = [
+		{ id: 1, name: 'Alice' },
+		{ id: 2, name: 'Bob' },
+		{ id: 3, name: 'Charlie' }
+	  ];
+	  
+	  const updatedArray = _.map(originalArray, (obj: object) => {
+		const x = _.mapKeys(obj, (value, key) => key === 'id' ? 'itemId' : key);
+		console.log('xxxxxxxxxx', x);
+		return x;
+	  });
+	  
+	  console.log(updatedArray);
 
 	return (<>
 		<Stack direction="row" spacing={1} alignItems="center">
@@ -58,7 +75,7 @@ export default function MultiSelectInput() {
 			</Select>
 		</Stack>
 		<div className='table'>
-			
+
 			<div className='table-header-group'>
 				<div className='table-cell'>111</div>
 				<div className='table-cell'>222</div>
