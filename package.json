@@ -1,0 +1,53 @@
+{
+	"name": "next-tailwinds-mui",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@emotion/cache": "^11.10.5",
+		"@emotion/react": "^11.9.0",
+		"@emotion/server": "^11.10.0",
+		"@emotion/styled": "^11.8.1",
+		"@fontsource/roboto": "^4.5.7",
+		"@mui/icons-material": "^5.8.0",
+		"@mui/material": "^5.8.0",
+		"@mui/styled-engine-sc": "^5.8.0",
+		"@reduxjs/toolkit": "^1.9.3",
+		"lodash": "^4.17.21",
+		"next": "^13.2.4",
+		"next-redux-wrapper": "^8.1.0",
+		"react": "^18.2.0",
+		"react-dom": "18.2",
+		"react-dropzone": "^14.2.3",
+		"react-redux": "^8.0.5",
+		"react-toastify": "^9.1.2",
+		"redux": "^4.2.1",
+		"xlsx": "^0.18.5"
+	},
+	"devDependencies": {
+		"@types/autoprefixer": "^10.2.0",
+		"@types/cssnano": "^5.1.0",
+		"@types/lodash": "^4.14.192",
+		"@types/node": "17.0.34",
+		"@types/prettier": "^2.6.1",
+		"@types/react": "18.0.9",
+		"@types/react-dom": "18.0.4",
+		"@types/tailwindcss": "^3.0.10",
+		"@typescript-eslint/eslint-plugin": "^5.25.0",
+		"@typescript-eslint/parser": "^5.25.0",
+		"autoprefixer": "^10.4.7",
+		"cssnano": "^5.1.8",
+		"eslint": "8.15.0",
+		"eslint-config-next": "12.1.6",
+		"postcss": "^8.4.14",
+		"prettier": "^2.6.2",
+		"prettier-plugin-tailwindcss": "^0.1.11",
+		"tailwindcss": "^3.0.24",
+		"typescript": "4.6.4"
+	}
+}
